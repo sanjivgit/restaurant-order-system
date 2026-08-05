@@ -26,7 +26,7 @@ export default function EmployeeDashboardPage() {
     { refetchInterval: 8000 }
   );
 
-  const activeStatuses = ORDER_STATUS_FLOW.filter((s) => s !== "COMPLETED");
+  const activeStatuses = ORDER_STATUS_FLOW.filter((s) => s !== "COMPLETED" && s !== "PENDING");
 
   return (
     <div className="space-y-5">

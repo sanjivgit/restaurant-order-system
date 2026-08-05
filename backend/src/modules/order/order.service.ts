@@ -81,10 +81,19 @@ export class OrderService {
     // Employees are restricted to their own branch; admins may query any branch (or all).
     const branchId = user.role === 'EMPLOYEE' ? user.branchId! : query.branchId;
 
+    // Newly placed orders are only visible to admins until accepted. Employees
+    // see only the accepted orders still in progress (nothing PENDING or CANCELLED).
     const where = {
       ...(branchId ? { branchId } : {}),
       ...(query.tableId ? { tableId: query.tableId } : {}),
-      ...(query.status ? { status: query.status } : {}),
+      ...(user.role === 'EMPLOYEE'
+        ? {
+            AND: [
+              { ...(query.status ? { status: query.status } : {}) },
+              { status: { notIn: [OrderStatus.PENDING, OrderStatus.CANCELLED] } },
+            ],
+          }
+        : { ...(query.status ? { status: query.status } : {}) }),
     };
 
     const [items, total] = await this.prisma.$transaction([
@@ -120,8 +129,14 @@ export class OrderService {
     if (!order) throw new NotFoundException('Order', id);
 
     // Only staff (employee/admin) update order status, and employees only within their own branch.
-    if (user.role === 'EMPLOYEE' && order.branchId !== user.branchId) {
-      throw new ForbiddenActionException('You can only update orders for your own branch.');
+    if (user.role === 'EMPLOYEE') {
+      if (order.branchId !== user.branchId) {
+        throw new ForbiddenActionException('You can only update orders for your own branch.');
+      }
+      // Accepting a new order (PENDING -> PREPARING) is an admin-only action.
+      if (order.status === OrderStatus.PENDING) {
+        throw new ForbiddenActionException('Order must be accepted by an admin before its status can be updated.');
+      }
     }
 
     const currentStatus = order.status as OrderStatus;
@@ -153,7 +168,7 @@ export class OrderService {
     });
   }
 
-  private assertCanAccessOrder(user: AuthUser, order: { branchId: string; tableId: string }) {
+  private assertCanAccessOrder(user: AuthUser, order: { branchId: string; tableId: string; status: string }) {
     if (user.type === 'guest') {
       if (order.tableId !== user.tableId) {
         throw new ForbiddenActionException('You can only view orders placed from your own table session.');
@@ -161,8 +176,13 @@ export class OrderService {
       return;
     }
 
-    if (user.role === 'EMPLOYEE' && order.branchId !== user.branchId) {
-      throw new ForbiddenActionException('You can only view orders for your own branch.');
+    if (user.role === 'EMPLOYEE') {
+      if (order.branchId !== user.branchId) {
+        throw new ForbiddenActionException('You can only view orders for your own branch.');
+      }
+      if (order.status === OrderStatus.PENDING) {
+        throw new ForbiddenActionException('Order is pending admin acceptance.');
+      }
     }
     // Admins may view any order.
   }

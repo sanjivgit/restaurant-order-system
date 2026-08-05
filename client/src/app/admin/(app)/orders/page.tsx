@@ -91,7 +91,7 @@ export default function AdminOrdersPage() {
         <>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginated.map((order) => (
-              <OrderCard key={order.id} order={order} canAdvance={order.status !== "COMPLETED"} />
+              <OrderCard key={order.id} order={order} canAdvance={order.status !== "COMPLETED"} acceptLabel="Accept order" />
             ))}
           </div>
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />

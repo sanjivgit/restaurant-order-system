@@ -10,10 +10,15 @@ import { formatSmartDate } from "@/utils/helper";
 import type { Order } from "@/types";
 import { useUpdateOrderStatus } from "@/features/order/services/order.service";
 
-const OrderCard: React.FC<{ order: Order; canAdvance?: boolean }> = ({ order, canAdvance = true }) => {
+const OrderCard: React.FC<{
+  order: Order;
+  canAdvance?: boolean;
+  acceptLabel?: string;
+}> = ({ order, canAdvance = true, acceptLabel }) => {
   const { mutate: updateStatus, isPending } = useUpdateOrderStatus();
   const currentIdx = ORDER_STATUS_FLOW.indexOf(order.status);
-  const nextStatus = ORDER_STATUS_FLOW[currentIdx + 1];
+  const nextStatus = currentIdx >= 0 ? ORDER_STATUS_FLOW[currentIdx + 1] : undefined;
+  const isPendingOrder = order.status === "PENDING";
 
   return (
     <Card className="p-4 flex flex-col gap-3">
@@ -52,7 +57,7 @@ const OrderCard: React.FC<{ order: Order; canAdvance?: boolean }> = ({ order, ca
           onClick={() => updateStatus({ id: order.id, status: nextStatus })}
           icon={<ChevronRight className="size-3.5" />}
         >
-          Mark as {ORDER_STATUS_LABEL[nextStatus]}
+          {isPendingOrder && acceptLabel ? acceptLabel : `Mark as ${ORDER_STATUS_LABEL[nextStatus]}`}
         </Button>
       )}
     </Card>
