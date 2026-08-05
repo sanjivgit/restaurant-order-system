@@ -13,7 +13,7 @@ export default function EmployeeLoginPage() {
         <LoginForm
           role="EMPLOYEE"
           redirectTo="/employee/dashboard"
-          demoHint="Demo: ravi@tableserve.app / password"
+          demoHint="Use an employee account from Admin → Employees"
         />
       </div>
     </div>

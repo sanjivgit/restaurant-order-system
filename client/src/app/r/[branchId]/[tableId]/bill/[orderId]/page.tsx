@@ -6,7 +6,7 @@ import Spinner, { ErrorState } from "@/components/ui/Spinner";
 import { PriceTag } from "@/components/common/Logo";
 import { formatSmartDate } from "@/utils/helper";
 import { useGetBill } from "@/features/order/services/order.service";
-import { db } from "@/utils/mock/db";
+import ENV from "@/utils/config";
 
 export default function BillPage({
   params,
@@ -36,7 +36,7 @@ export default function BillPage({
     <div className="max-w-md mx-auto px-4 pt-6 pb-16">
       <div className="ticket-edge rounded-box border border-base-300 bg-base-100 shadow-sm overflow-hidden">
         <div className="px-6 pt-6 pb-4 text-center">
-          <p className="font-display font-semibold text-lg">{db.restaurant.name}</p>
+          <p className="font-display font-semibold text-lg">{ENV.APP_NAME}</p>
           <p className="text-xs text-base-content/50">{formatSmartDate(order.createdAt)}</p>
         </div>
 

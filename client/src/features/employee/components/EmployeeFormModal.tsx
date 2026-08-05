@@ -48,7 +48,7 @@ const EmployeeFormModal: React.FC<{
         email: employee?.email ?? "",
         phone: employee?.phone ?? "",
         branchId: employee?.branchId ?? "",
-        role: employee?.role ?? "WAITER",
+        role: employee?.role ?? "EMPLOYEE",
       });
     }
   }, [isOpen, employee, reset]);

@@ -14,9 +14,9 @@ export interface DashboardSummary {
 
 export const useGetDashboardSummary = (branchId?: string) => {
   return useQuery({
-    queryKey: [APIs.DASHBOARD.SUMMARY, branchId],
+    queryKey: [APIs.DASHBOARD.ADMIN, branchId],
     queryFn: async () => {
-      const { data } = await axios.get(APIs.DASHBOARD.SUMMARY, { params: { branchId } });
+      const { data } = await axios.get(APIs.DASHBOARD.ADMIN, { params: { branchId } });
       return data.data as DashboardSummary;
     },
     refetchInterval: 15000,

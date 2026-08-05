@@ -1,45 +1,67 @@
 const APIs = {
   AUTH: {
-    LOGIN: "auth/login/",
-    LOGOUT: "auth/logout/",
-    ME: "auth/me/",
+    GUEST_TOKEN: "auth/guest/token", // POST { tableId }
+    LOGIN: "auth/login", // POST { email, password }
+    REFRESH: "auth/refresh", // POST { refreshToken }
   },
-  CONTEXT: {
-    RESOLVE_QR: "context/resolve/", // { restaurantSlug, branchSlug, tableId }
-  },
-  MENU: {
-    CATEGORIES__GET: "menu/categories/",
-    CATEGORIES__CREATE: "menu/categories/create/",
-    CATEGORIES__UPDATE__id: "menu/categories/update/", // /{categoryId}
-    CATEGORIES__DELETE__id: "menu/categories/delete/", // /{categoryId}
-
-    ITEMS__GET: "menu/items/",
-    ITEMS__CREATE: "menu/items/create/",
-    ITEMS__UPDATE__id: "menu/items/update/", // /{itemId}
-    ITEMS__DELETE__id: "menu/items/delete/", // /{itemId}
-    ITEMS__AVAILABILITY__id: "menu/items/availability/", // /{itemId}
-  },
-  ORDER: {
-    CREATE: "orders/create/",
-    GET: "orders/",
-    GET__id: "orders/", // /{orderId}
-    UPDATE_STATUS__id: "orders/status/", // /{orderId}
-    BILL__id: "orders/bill/", // /{orderId}
+  RESTAURANT: {
+    GET: "restaurants", // GET
+    GET__id: "restaurants/", // GET /{restaurantId}
+    CREATE: "restaurants", // POST { name, logo?, phone?, email?, gstNumber? }
+    UPDATE__id: "restaurants/", // PATCH /{restaurantId}
+    DELETE__id: "restaurants/", // DELETE /{restaurantId}
   },
   BRANCH: {
-    GET: "branches/",
-    CREATE: "branches/create/",
-    UPDATE__id: "branches/update/", // /{branchId}
-    DELETE__id: "branches/delete/", // /{branchId}
+    GET: "branches", // GET ?restaurantId
+    GET__id: "branches/", // GET /{branchId}
+    CREATE: "branches", // POST { restaurantId, name, address?, phone?, status? }
+    UPDATE__id: "branches/", // PATCH /{branchId}
+    DELETE__id: "branches/", // DELETE /{branchId}
+  },
+  CATEGORY: {
+    GET: "categories", // GET ?branchId (public)
+    GET__id: "categories/", // GET /{categoryId}
+    CREATE: "categories", // POST { branchId, name, isActive? }
+    UPDATE__id: "categories/", // PATCH /{categoryId}
+    DELETE__id: "categories/", // DELETE /{categoryId}
+  },
+  MENU: {
+    GET: "menu-items", // GET ?branchId&categoryId&isVeg&isAvailable&search&page&limit (public)
+    GET__id: "menu-items/", // GET /{itemId} (public)
+    CREATE: "menu-items", // POST { branchId, categoryId, name, description?, image?, price, isVeg?, isAvailable? }
+    UPDATE__id: "menu-items/", // PATCH /{itemId}
+    DELETE__id: "menu-items/", // DELETE /{itemId}
+  },
+  TABLE: {
+    GET: "tables", // GET ?branchId
+    GET__id: "tables/", // GET /{tableId}
+    CREATE: "tables", // POST { branchId, tableNumber, isActive? }
+    UPDATE__id: "tables/", // PATCH /{tableId}
+    DELETE__id: "tables/", // DELETE /{tableId}
+  },
+  ORDER: {
+    CREATE: "orders", // POST (guest) { items: [{ menuItemId, quantity }] }
+    GET: "orders", // GET ?branchId&tableId&status&page&limit (staff)
+    GET__id: "orders/", // GET /{orderId} (guest/staff)
+    UPDATE_STATUS__id: "orders/", // PATCH /{orderId}/status { status }
+  },
+  BILL: {
+    GET__orderId: "bills/order/", // GET /{orderId}
   },
   EMPLOYEE: {
-    GET: "employees/",
-    CREATE: "employees/create/",
-    UPDATE__id: "employees/update/", // /{employeeId}
-    DELETE__id: "employees/delete/", // /{employeeId}
+    ME: "employees/me", // GET (staff)
+    GET: "employees", // GET ?branchId&page&limit&search (admin)
+    GET__id: "employees/", // GET /{employeeId}
+    CREATE: "employees", // POST { name, email, phone?, password, role, branchId?, status? }
+    UPDATE__id: "employees/", // PATCH /{employeeId}
+    DELETE__id: "employees/", // DELETE /{employeeId}
   },
   DASHBOARD: {
-    SUMMARY: "dashboard/summary/",
+    ADMIN: "dashboard/admin", // GET ?branchId
+    EMPLOYEE: "dashboard/employee", // GET ?branchId
+  },
+  HEALTH: {
+    GET: "health",
   },
 };
 
