@@ -7,18 +7,22 @@ import Button from "@/components/ui/Button";
 import { PriceTag } from "@/components/common/Logo";
 import { ORDER_STATUS_BADGE, ORDER_STATUS_FLOW, ORDER_STATUS_LABEL } from "@/utils/constants";
 import { formatSmartDate } from "@/utils/helper";
-import type { Order } from "@/types";
+import type { Order, OrderStatus } from "@/types";
 import { useUpdateOrderStatus } from "@/features/order/services/order.service";
 
 const OrderCard: React.FC<{
   order: Order;
   canAdvance?: boolean;
   acceptLabel?: string;
-}> = ({ order, canAdvance = true, acceptLabel }) => {
+  maxStatus?: OrderStatus;
+}> = ({ order, canAdvance = true, acceptLabel, maxStatus = "COMPLETED" }) => {
   const { mutate: updateStatus, isPending } = useUpdateOrderStatus();
   const currentIdx = ORDER_STATUS_FLOW.indexOf(order.status);
   const nextStatus = currentIdx >= 0 ? ORDER_STATUS_FLOW[currentIdx + 1] : undefined;
   const isPendingOrder = order.status === "PENDING";
+  const maxIdx = ORDER_STATUS_FLOW.indexOf(maxStatus);
+  const canAdvanceToNext =
+    Boolean(nextStatus) && maxIdx >= 0 && ORDER_STATUS_FLOW.indexOf(nextStatus!) <= maxIdx;
 
   return (
     <Card className="p-4 flex flex-col gap-3">
@@ -50,7 +54,7 @@ const OrderCard: React.FC<{
         <PriceTag amount={order.grandTotal} className="font-semibold" />
       </div>
 
-      {canAdvance && nextStatus && (
+      {canAdvance && canAdvanceToNext && nextStatus && (
         <Button
           size="sm"
           isLoading={isPending}

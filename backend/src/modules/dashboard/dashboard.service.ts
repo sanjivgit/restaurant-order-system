@@ -46,7 +46,7 @@ export class DashboardService {
 
   async employeeStats(branchId: string) {
     const currentOrders = await this.prisma.order.findMany({
-      where: { branchId, status: { in: ['PENDING', 'PREPARING', 'READY'] } },
+      where: { branchId, status: { in: ['ACCEPTED', 'PREPARING', 'READY', 'SERVED'] } },
       include: { items: { include: { menuItem: true } }, table: true },
       orderBy: { createdAt: 'asc' },
     });

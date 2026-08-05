@@ -11,14 +11,14 @@ export const createOrderSchema = z.object({
 export type CreateOrderDto = z.infer<typeof createOrderSchema>;
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(['PENDING', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']),
+  status: z.enum(['PENDING', 'ACCEPTED', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']),
 });
 export type UpdateOrderStatusDto = z.infer<typeof updateOrderStatusSchema>;
 
 export const orderQuerySchema = z.object({
   branchId: z.string().uuid().optional(),
   tableId: z.string().uuid().optional(),
-  status: z.enum(['PENDING', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']).optional(),
+  status: z.enum(['PENDING', 'ACCEPTED', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']).optional(),
   page: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().optional(),
 });

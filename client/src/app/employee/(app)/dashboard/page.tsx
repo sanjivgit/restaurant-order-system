@@ -82,7 +82,7 @@ export default function EmployeeDashboardPage() {
           {orders
             .filter((o) => statusFilter || o.status !== "COMPLETED")
             .map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={order.id} order={order} maxStatus="SERVED" />
             ))}
         </div>
       )}

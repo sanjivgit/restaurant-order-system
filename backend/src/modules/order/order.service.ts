@@ -133,9 +133,12 @@ export class OrderService {
       if (order.branchId !== user.branchId) {
         throw new ForbiddenActionException('You can only update orders for your own branch.');
       }
-      // Accepting a new order (PENDING -> PREPARING) is an admin-only action.
-      if (order.status === OrderStatus.PENDING) {
-        throw new ForbiddenActionException('Order must be accepted by an admin before its status can be updated.');
+      // Employees may only move accepted orders through the kitchen flow:
+      // ACCEPTED -> PREPARING -> READY -> SERVED. Admin accepts (PENDING -> ACCEPTED)
+      // and completes (SERVED -> COMPLETED) orders.
+      const employeeTargets = [OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.SERVED];
+      if (!employeeTargets.includes(dto.status as OrderStatus)) {
+        throw new ForbiddenActionException('You can only move accepted orders through the kitchen flow.');
       }
     }
 
