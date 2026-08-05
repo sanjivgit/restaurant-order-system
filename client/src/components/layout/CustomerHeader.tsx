@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { ReceiptText, ShoppingCart } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
 import { Logo } from "@/components/common/Logo";
 
@@ -24,6 +24,14 @@ const CustomerHeader: React.FC<{ baseHref: string; branchName: string; tableNumb
             <p className="text-xs text-base-content/50 leading-none">{branchName}</p>
             <p className="text-sm font-medium font-mono leading-tight">Table {tableNumber}</p>
           </div>
+          <Link
+            href={`${baseHref}/orders`}
+            className="btn btn-ghost btn-circle"
+            aria-label="My orders"
+            title="My orders"
+          >
+            <ReceiptText className="size-5" />
+          </Link>
           <Link href={`${baseHref}/cart`} className="btn btn-primary btn-circle relative" aria-label="View cart">
             <ShoppingCart className="size-5" />
             {count > 0 && (

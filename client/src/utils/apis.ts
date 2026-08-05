@@ -42,6 +42,7 @@ const APIs = {
   ORDER: {
     CREATE: "orders", // POST (guest) { items: [{ menuItemId, quantity }] }
     GET: "orders", // GET ?branchId&tableId&status&page&limit (staff)
+    MY: "orders/my", // GET (guest) — current guest's orders for their table
     GET__id: "orders/", // GET /{orderId} (guest/staff)
     UPDATE_STATUS__id: "orders/", // PATCH /{orderId}/status { status }
   },

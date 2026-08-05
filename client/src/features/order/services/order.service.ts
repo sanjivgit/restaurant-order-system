@@ -109,6 +109,19 @@ export const useGetOrders = (params: GetOrdersParams, options?: { refetchInterva
   });
 };
 
+export const useGetMyOrders = (tableId?: string, options?: { refetchInterval?: number }) => {
+  return useQuery({
+    queryKey: [APIs.ORDER.MY, tableId],
+    queryFn: async () => {
+      const config = await getGuestAuthConfig(tableId);
+      const { data } = await axios.get(APIs.ORDER.MY, config);
+      return ((data.data ?? []) as ApiOrder[]).map(mapOrder) as Order[];
+    },
+    enabled: Boolean(tableId),
+    refetchInterval: options?.refetchInterval,
+  });
+};
+
 export const useGetOrderDetail = (
   orderId?: string,
   tableId?: string,

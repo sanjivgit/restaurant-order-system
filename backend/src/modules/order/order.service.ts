@@ -95,6 +95,18 @@ export class OrderService {
     return buildPaginationResult(items, total, page, limit);
   }
 
+  /**
+   * Lists orders placed from the guest's table. The guest token already
+   * scopes the caller to a single table, so orders cannot be spoofed.
+   */
+  async findAllForGuest(user: AuthUser) {
+    return this.prisma.order.findMany({
+      where: { tableId: user.tableId },
+      include: ORDER_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(user: AuthUser, id: string) {
     const order = await this.prisma.order.findFirst({ where: { id }, include: ORDER_INCLUDE });
     if (!order) throw new NotFoundException('Order', id);

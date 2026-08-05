@@ -43,6 +43,14 @@ export class OrderController {
     return ApiResponse.success(result.items, 'Orders retrieved successfully.', result.meta);
   }
 
+  @Get('my')
+  @Roles(Role.GUEST)
+  @ApiOperation({ summary: "List the current guest's orders for their table (guest only)." })
+  async findMy(@CurrentUser() user: AuthUser) {
+    const orders = await this.orderService.findAllForGuest(user);
+    return ApiResponse.success(orders, 'Your orders retrieved successfully.');
+  }
+
   @Get(':id')
   @Roles(Role.GUEST, Role.EMPLOYEE, Role.ADMIN)
   @ApiOperation({ summary: 'Get order details/status. Guests may only view their own table\'s order.' })
