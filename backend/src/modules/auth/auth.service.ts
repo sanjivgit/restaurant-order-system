@@ -19,8 +19,20 @@ export class AuthService {
   /**
    * Issues a short-lived guest token scoped to a single table.
    * No customer account/registration is required.
+   *
+   * If the caller already holds a guest token (`dto.token`) and it is still
+   * valid for this table, the SAME token is returned so clients can keep
+   * using their existing session. A new token is only issued when the
+   * existing one is missing, expired, or scoped to a different table.
    */
   async issueGuestToken(dto: GuestTokenDto) {
+    if (dto.token) {
+      const existing = await this.validateGuestToken(dto.token, dto.tableId);
+      if (existing) {
+        return existing;
+      }
+    }
+
     const table = await this.prisma.table.findFirst({
       where: { id: dto.tableId, deletedAt: null, isActive: true },
       include: { branch: true },
@@ -48,6 +60,30 @@ export class AuthService {
       branchId: table.branchId,
       tableId: table.id,
     };
+  }
+
+  /**
+   * Verifies an existing guest token and returns its session data when it is
+   * still valid and scoped to the requested table. Returns null otherwise.
+   */
+  private async validateGuestToken(token: string, tableId: string) {
+    try {
+      const secret = this.configService.get<string>('auth.guestJwtSecret');
+      const payload = await this.jwtService.verifyAsync(token, { secret });
+
+      if (payload.type !== JWT_GUEST_TYPE || payload.tableId !== tableId) {
+        return null;
+      }
+
+      return {
+        guestToken: token,
+        expiresIn: this.configService.get<string>('auth.guestTokenExpiresIn'),
+        branchId: payload.branchId,
+        tableId: payload.tableId,
+      };
+    } catch {
+      return null;
+    }
   }
 
   /**

@@ -13,8 +13,8 @@ export default function BillPage({
 }: {
   params: Promise<{ branchId: string; tableId: string; orderId: string }>;
 }) {
-  const { orderId } = use(params);
-  const { data: order, isLoading, isError, refetch } = useGetBill(orderId);
+  const { branchId, tableId, orderId } = use(params);
+  const { data: order, isLoading, isError, refetch } = useGetBill(orderId, tableId);
 
   if (isLoading) {
     return (

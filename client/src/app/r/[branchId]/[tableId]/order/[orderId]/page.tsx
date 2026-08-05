@@ -14,7 +14,9 @@ export default function OrderStatusPage({
   params: Promise<{ branchId: string; tableId: string; orderId: string }>;
 }) {
   const { branchId, tableId, orderId } = use(params);
-  const { data: order, isLoading, isError, refetch } = useGetOrderDetail(orderId, { refetchInterval: 5000 });
+  const { data: order, isLoading, isError, refetch } = useGetOrderDetail(orderId, tableId, {
+    refetchInterval: 5000,
+  });
 
   if (isLoading) {
     return (

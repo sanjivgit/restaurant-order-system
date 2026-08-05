@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 export const guestTokenSchema = z.object({
   tableId: z.string().uuid('tableId must be a valid UUID.'),
+  // Optional existing guest token. If provided and still valid for this table,
+  // the same token is returned instead of issuing a new one.
+  token: z.string().min(1).optional(),
 });
 export type GuestTokenDto = z.infer<typeof guestTokenSchema>;
 

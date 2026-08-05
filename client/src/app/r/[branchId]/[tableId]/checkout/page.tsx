@@ -35,6 +35,7 @@ export default function CheckoutPage({
       {
         branchId: dining.branchId,
         tableNumber: dining.tableNumber,
+        tableId,
         items: items.map((i) => ({ itemId: i.itemId, name: i.name, price: i.price, qty: i.qty })),
       },
       {

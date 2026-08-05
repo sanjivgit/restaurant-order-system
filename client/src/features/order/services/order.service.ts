@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "@/utils/axios";
 import APIs from "@/utils/apis";
 import useAppMutation from "@/react-query-config/hooks/useAppMutation";
+import { getGuestAuthConfig } from "@/features/auth/services/guestToken.service";
 import type { Order, OrderItem, OrderStatus } from "@/types";
 
 interface ApiOrderItem {
@@ -55,15 +56,22 @@ const mapOrder = (o: ApiOrder): Order => ({
 interface CreateOrderPayload {
   branchId: string;
   tableNumber: string;
+  tableId: string;
   items: OrderItem[];
 }
 
 export const useCreateOrder = () =>
   useAppMutation<Order, CreateOrderPayload>({
     mutationFn: async (payload) => {
-      const { data } = await axios.post(APIs.ORDER.CREATE, {
-        items: payload.items.map((i) => ({ menuItemId: i.itemId, quantity: i.qty })),
-      });
+      const config = await getGuestAuthConfig(payload.tableId);
+
+      const { data } = await axios.post(
+        APIs.ORDER.CREATE,
+        {
+          items: payload.items.map((i) => ({ menuItemId: i.itemId, quantity: i.qty })),
+        },
+        config
+      );
       return mapOrder(data.data as ApiOrder);
     },
     successMsg: "Order placed",
@@ -101,11 +109,16 @@ export const useGetOrders = (params: GetOrdersParams, options?: { refetchInterva
   });
 };
 
-export const useGetOrderDetail = (orderId?: string, options?: { refetchInterval?: number }) => {
+export const useGetOrderDetail = (
+  orderId?: string,
+  tableId?: string,
+  options?: { refetchInterval?: number }
+) => {
   return useQuery({
     queryKey: [APIs.ORDER.GET__id, orderId],
     queryFn: async () => {
-      const { data } = await axios.get(`${APIs.ORDER.GET__id}${orderId}`);
+      const config = await getGuestAuthConfig(tableId);
+      const { data } = await axios.get(`${APIs.ORDER.GET__id}${orderId}`, config);
       return mapOrder(data.data as ApiOrder);
     },
     enabled: Boolean(orderId),
@@ -113,11 +126,12 @@ export const useGetOrderDetail = (orderId?: string, options?: { refetchInterval?
   });
 };
 
-export const useGetBill = (orderId?: string) => {
+export const useGetBill = (orderId?: string, tableId?: string) => {
   return useQuery({
     queryKey: [APIs.ORDER.GET__id, "bill", orderId],
     queryFn: async () => {
-      const { data } = await axios.get(`${APIs.ORDER.GET__id}${orderId}`);
+      const config = await getGuestAuthConfig(tableId);
+      const { data } = await axios.get(`${APIs.ORDER.GET__id}${orderId}`, config);
       return mapOrder(data.data as ApiOrder);
     },
     enabled: Boolean(orderId),

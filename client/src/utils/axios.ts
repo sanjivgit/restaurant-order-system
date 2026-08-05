@@ -5,6 +5,8 @@ import APIs from "./apis";
 import { logoutUser } from "./helper";
 import type { AuthUser } from "../redux/authSlice";
 
+type AppAxiosConfig = AxiosRequestConfig & { _retry?: boolean; _guestAuth?: boolean };
+
 const instance = axios.create({
   baseURL: ENV.API_URL,
   timeout: 30000,
@@ -15,6 +17,11 @@ const getAuthToken = async (): Promise<string | null> => {
   const user = await Storage.get<AuthUser>("auth_user");
   if (user?.token) return user.token;
 
+  const guest = await Storage.get<{ guestToken: string }>("guest_token");
+  return guest?.guestToken ?? null;
+};
+
+const getStoredGuestToken = async (): Promise<string | null> => {
   const guest = await Storage.get<{ guestToken: string }>("guest_token");
   return guest?.guestToken ?? null;
 };
@@ -54,6 +61,16 @@ const refreshAccessToken = async (): Promise<string | null> => {
 
 instance.interceptors.request.use(
   async function (config) {
+    // Guest-scoped requests always use the guest token (never a staff auth_user token).
+    if ((config as AppAxiosConfig)._guestAuth) {
+      const guestToken = await getStoredGuestToken();
+      if (guestToken) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${guestToken}`;
+      }
+      return config;
+    }
+
     const token = await getAuthToken();
     if (token) {
       config.headers = config.headers || {};
@@ -71,10 +88,12 @@ instance.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const original = error?.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
+    const original = error?.config as AppAxiosConfig | undefined;
     const status = error?.response?.status;
+    const isGuest = original?._guestAuth === true;
 
-    if (status === 401 && original && !original._retry) {
+    // Guest requests manage their own short-lived token; staff refresh doesn't apply.
+    if (status === 401 && original && !original._retry && !isGuest) {
       original._retry = true;
       const token = await refreshAccessToken();
       if (token) {
@@ -83,8 +102,14 @@ instance.interceptors.response.use(
       }
     }
 
-    if (status === 401) {
-      await logoutUser();
+    if (status === 401 && !isGuest) {
+      // Only sign out staff sessions. Guest sessions rely on the stored guest
+      // token, which is re-validated/re-issued via the guest token API before
+      // each guest request, so we must not wipe it here.
+      const user = await Storage.get<AuthUser>("auth_user");
+      if (user?.token) {
+        await logoutUser();
+      }
     }
     return Promise.reject(error);
   }

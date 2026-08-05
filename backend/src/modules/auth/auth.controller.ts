@@ -15,7 +15,7 @@ export class AuthController {
   @Post('guest/token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Issue a short-lived guest token for a table (QR scan entry point). No account required.' })
-  @ApiBody({ schema: { example: { tableId: 'uuid' } } })
+  @ApiBody({ schema: { example: { tableId: 'uuid', token: 'optional existing guest token' } } })
   async guestToken(@Body(new ZodValidationPipe(guestTokenSchema)) dto: GuestTokenDto) {
     const result = await this.authService.issueGuestToken(dto);
     return ApiResponse.success(result, 'Guest token issued successfully.');

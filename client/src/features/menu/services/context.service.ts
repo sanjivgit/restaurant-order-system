@@ -1,15 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "@/utils/axios";
+import { getGuestTokenData } from "@/features/auth/services/guestToken.service";
 import APIs from "@/utils/apis";
-import { Storage } from "@/utils/storage";
 import type { DiningContext } from "@/redux/contextSlice";
-
-interface GuestTokenResponse {
-  guestToken: string;
-  expiresIn: string;
-  branchId: string;
-  tableId: string;
-}
 
 export const useResolveDiningContext = (params: {
   restaurantSlug: string;
@@ -19,17 +11,14 @@ export const useResolveDiningContext = (params: {
   return useQuery({
     queryKey: [APIs.AUTH.GUEST_TOKEN, params.tableId],
     queryFn: async () => {
-      const { data } = await axios.post(APIs.AUTH.GUEST_TOKEN, { tableId: params.tableId });
-      const tokenData = data.data as GuestTokenResponse;
-
-      await Storage.set("guest_token", { guestToken: tokenData.guestToken });
+      const tokenData = await getGuestTokenData(params.tableId);
 
       return {
-        restaurantId: tokenData.branchId,
+        restaurantId: tokenData?.branchId ?? "",
         restaurantName: "",
-        branchId: tokenData.branchId ?? params.branchSlug,
+        branchId: tokenData?.branchId ?? params.branchSlug,
         branchName: params.branchSlug,
-        tableId: tokenData.tableId ?? params.tableId,
+        tableId: tokenData?.tableId ?? params.tableId,
         tableNumber: params.tableId,
       } as DiningContext;
     },

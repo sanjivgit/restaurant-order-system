@@ -1,6 +1,6 @@
 const APIs = {
   AUTH: {
-    GUEST_TOKEN: "auth/guest/token", // POST { tableId }
+    GUEST_TOKEN: "auth/guest/token", // POST { tableId, token? } — returns same token if valid, else issues a new one
     LOGIN: "auth/login", // POST { email, password }
     REFRESH: "auth/refresh", // POST { refreshToken }
   },
