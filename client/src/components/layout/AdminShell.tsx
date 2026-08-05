@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu as MenuIcon,
   ChevronDown,
+  Grid2x2,
 } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
 import Avatar from "@/components/ui/Avatar";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { href: "/admin/menu/categories", label: "Menu Categories", icon: FolderTree },
   { href: "/admin/menu/items", label: "Menu Items", icon: UtensilsCrossed },
   { href: "/admin/employees", label: "Employees", icon: Users },
+  { href: "/admin/tables", label: "Tables", icon: Grid2x2 },
   { href: "/admin/branches", label: "Branches", icon: Building2 },
 ];
 

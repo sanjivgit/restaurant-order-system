@@ -21,9 +21,10 @@ export class TableService {
 
     const table = await this.prisma.table.create({ data: dto });
 
-    // Every table gets a unique QR code URL pointing to the ordering page, e.g. https://domain.com/order/{tableId}
+    // Every table gets a unique QR code URL pointing to the table's ordering page,
+    // e.g. https://domain.com/r/{branchId}/{tableId}/menu
     const appDomain = this.configService.get<string>('appDomain');
-    const qrCodeUrl = `${appDomain}/order/${table.id}`;
+    const qrCodeUrl = `${appDomain}/r/${table.branchId}/${table.id}/menu`;
 
     return this.prisma.table.update({ where: { id: table.id }, data: { qrCodeUrl } });
   }
