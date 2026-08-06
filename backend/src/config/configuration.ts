@@ -3,7 +3,7 @@ export default () => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   apiPrefix: process.env.API_PREFIX ?? 'api/v1',
   corsOrigin: process.env.CORS_ORIGIN ?? '*',
-  appDomain: process.env.APP_DOMAIN ?? 'https://domain.com',
+  appDomain: process.env.APP_DOMAIN ?? 'https://restaurant-order-system-eta.vercel.app/',
 
   database: {
     url: process.env.DATABASE_URL,

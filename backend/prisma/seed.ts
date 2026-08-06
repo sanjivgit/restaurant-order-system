@@ -51,7 +51,7 @@ async function main() {
   });
   await prisma.table.update({
     where: { id: table.id },
-    data: { qrCodeUrl: `https://domain.com/order/${table.id}` },
+    data: { qrCodeUrl: `https://restaurant-order-system-eta.vercel.app//order/${table.id}` },
   });
 
   console.log('Seed complete.');
