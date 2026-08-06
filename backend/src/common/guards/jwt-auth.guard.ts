@@ -50,7 +50,7 @@ export class JwtAuthGuard implements CanActivate {
         const payload = await this.jwtService.verifyAsync(token, {
           secret: this.configService.get<string>('auth.guestJwtSecret'),
         });
-        request.user = this.toGuestUser(payload);
+        request.user = this.toGuestUser({...payload, token});
       } else if (decoded.type === JWT_STAFF_TYPE) {
         const payload = await this.jwtService.verifyAsync(token, {
           secret: this.configService.get<string>('auth.jwtAccessSecret'),
@@ -78,6 +78,7 @@ export class JwtAuthGuard implements CanActivate {
       restaurantId: payload.restaurantId,
       branchId: payload.branchId,
       tableId: payload.tableId,
+      guestToken: payload.token
     };
   }
 

@@ -48,7 +48,7 @@ export default function Home() {
     <div className="min-h-screen bg-base-100">
       <header className="max-w-4xl mx-auto px-5 py-6 flex items-center justify-between">
         <Logo />
-        <span className="font-mono text-xs text-base-content/40">Powered by live APIs</span>
+        {/* <span className="font-mono text-xs text-base-content/40">Powered by live APIs</span> */}
       </header>
 
       <main className="max-w-4xl mx-auto px-5 pb-20">

@@ -22,7 +22,7 @@ const CustomerHeader: React.FC<{ baseHref: string; branchName: string; tableNumb
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <p className="text-xs text-base-content/50 leading-none">{branchName}</p>
-            <p className="text-sm font-medium font-mono leading-tight">Table {tableNumber}</p>
+            <p className="text-sm font-medium font-mono leading-tight">{tableNumber}</p>
           </div>
           <Link
             href={`${baseHref}/orders`}

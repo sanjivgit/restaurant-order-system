@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
           <h1 className="font-display text-xl font-semibold">Admin login</h1>
           <p className="text-sm text-base-content/50 mt-1">Manage branches, staff, menu and orders.</p>
         </div>
-        <LoginForm role="ADMIN" redirectTo="/admin/dashboard" demoHint="Demo: admin@demo-restaurant.com / Admin@123" />
+        <LoginForm role="ADMIN" redirectTo="/admin/dashboard" demoHint="" />
       </div>
     </div>
   );

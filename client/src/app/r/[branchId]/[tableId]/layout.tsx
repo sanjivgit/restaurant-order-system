@@ -54,8 +54,8 @@ export default function CustomerLayout({
     <div className="min-h-screen flex flex-col">
       <CustomerHeader
         baseHref={`/r/${branchId}/${tableId}`}
-        branchName={dining.branchName}
-        tableNumber={dining.tableNumber}
+        branchName={""}
+        tableNumber={""}
       />
       <div className="flex-1">{children}</div>
     </div>
