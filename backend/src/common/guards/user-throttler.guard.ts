@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ThrottlerException, ThrottlerGuard, ThrottlerLimitDetail } from '@nestjs/throttler';
 import { AuthUser } from '@common/interfaces/auth-user.interface';
 
 /**
@@ -20,5 +20,14 @@ export class UserThrottlerGuard extends ThrottlerGuard {
       return `staff:${user.employeeId}`;
     }
     return ip
+  }
+
+  protected async throwThrottlingException(
+    context: ExecutionContext,
+    throttlerLimitDetail: ThrottlerLimitDetail,
+  ): Promise<void> {
+    throw new ThrottlerException(
+      `You can't place more than two items. Please wait a few minutes before trying again.`,
+    );
   }
 }

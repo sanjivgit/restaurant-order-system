@@ -27,7 +27,7 @@ export class OrderController {
   @Post()
   @Roles(Role.GUEST)
   @UseGuards(UserThrottlerGuard)
-  @Throttle({ default: { limit: 2, ttl: 3600 } })
+  @Throttle({ default: { limit: 2, ttl: 3600 * 1000 } })
   @ApiOperation({ summary: 'Place an order (guest only, scoped to the table from their guest token).' })
   async create(@CurrentUser() user: AuthUser, @Body(new ZodValidationPipe(createOrderSchema)) dto: CreateOrderDto) {
     const order = await this.orderService.create(user, dto);
