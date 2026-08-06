@@ -38,11 +38,11 @@ const BranchTables: React.FC<{ branchId: string; branchName: string }> = ({ bran
 };
 
 export default function Home() {
-  const hasSession = hasStoredSession();
-  const { data: restaurants } = useGetRestaurants({ enabled: hasSession });
-  const { data: branches } = useGetBranches({ enabled: hasSession });
+  // const hasSession = hasStoredSession();
+  // const { data: restaurants } = useGetRestaurants({ enabled: hasSession });
+  // const { data: branches } = useGetBranches({ enabled: hasSession });
 
-  const restaurantName = restaurants?.[0]?.name ?? ENV.APP_NAME;
+  const restaurantName = ENV.APP_NAME // restaurants?.[0]?.name ?? ENV.APP_NAME;
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -62,7 +62,7 @@ export default function Home() {
           </p>
         </section>
 
-        {branches && branches.length > 0 ? (
+        {/* {branches && branches.length > 0 ? (
           <section className="py-10">
             <div className="flex items-center gap-2 mb-4">
               <QrCode className="size-4 text-primary" />
@@ -84,7 +84,7 @@ export default function Home() {
               Log in as an admin to preview live table links for your seeded branches.
             </p>
           </section>
-        )}
+        )} */}
 
         <section className="py-10 border-t border-base-300 grid sm:grid-cols-2 gap-4">
           <Link
