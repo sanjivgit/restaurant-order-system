@@ -13,4 +13,5 @@ export interface AuthUser {
   // Guest fields
   restaurantId?: string;
   tableId?: string;
+  guestToken?: string;
 }

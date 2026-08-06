@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { OrderService } from './order.service';
+import { UserThrottlerGuard } from '@common/guards/user-throttler.guard';
 import { Roles } from '@common/decorators/roles.decorator';
 import { Role } from '@common/enums/role.enum';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
@@ -24,6 +26,8 @@ export class OrderController {
 
   @Post()
   @Roles(Role.GUEST)
+  @UseGuards(UserThrottlerGuard)
+  @Throttle({ default: { limit: 2, ttl: 3600 } })
   @ApiOperation({ summary: 'Place an order (guest only, scoped to the table from their guest token).' })
   async create(@CurrentUser() user: AuthUser, @Body(new ZodValidationPipe(createOrderSchema)) dto: CreateOrderDto) {
     const order = await this.orderService.create(user, dto);

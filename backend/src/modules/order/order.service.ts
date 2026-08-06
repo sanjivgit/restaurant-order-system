@@ -63,7 +63,7 @@ export class OrderService {
         restaurantId: user.restaurantId!,
         branchId: user.branchId!,
         tableId: user.tableId!,
-        guestToken: null,
+        guestToken: user.guestToken,
         subtotal,
         tax,
         grandTotal,
@@ -110,7 +110,7 @@ export class OrderService {
    */
   async findAllForGuest(user: AuthUser) {
     return this.prisma.order.findMany({
-      where: { tableId: user.tableId },
+      where: { guestToken: user.guestToken },
       include: ORDER_INCLUDE,
       orderBy: { createdAt: 'desc' },
     });
