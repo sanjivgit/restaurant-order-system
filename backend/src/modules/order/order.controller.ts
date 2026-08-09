@@ -39,6 +39,8 @@ export class OrderController {
   @ApiQuery({ name: 'branchId', required: false })
   @ApiQuery({ name: 'tableId', required: false })
   @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'date', required: false, description: 'Filter by date (YYYY-MM-DD). Defaults to today.' })
+  @ApiQuery({ name: 'timeSlot', required: false, description: 'ALL (default) | MORNING (06:00-14:00) | EVENING (14:00-24:00).' })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiOperation({ summary: 'List orders (employee/admin). Employees are scoped to their own branch.' })

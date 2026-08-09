@@ -15,10 +15,22 @@ export const updateOrderStatusSchema = z.object({
 });
 export type UpdateOrderStatusDto = z.infer<typeof updateOrderStatusSchema>;
 
+export const ORDER_TIME_SLOT = {
+  ALL: 'ALL',
+  MORNING: 'MORNING',
+  EVENING: 'EVENING',
+} as const;
+export type OrderTimeSlot = (typeof ORDER_TIME_SLOT)[keyof typeof ORDER_TIME_SLOT];
+
 export const orderQuerySchema = z.object({
   branchId: z.string().uuid().optional(),
   tableId: z.string().uuid().optional(),
   status: z.enum(['PENDING', 'ACCEPTED', 'PREPARING', 'READY', 'SERVED', 'COMPLETED', 'CANCELLED']).optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date. Use YYYY-MM-DD format.')
+    .optional(),
+  timeSlot: z.nativeEnum(ORDER_TIME_SLOT).default(ORDER_TIME_SLOT.ALL),
   page: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().optional(),
 });

@@ -1,6 +1,14 @@
-import type { OrderStatus } from "../types";
+import type { OrderStatus, OrderTimeSlot } from "../types";
 
 export const ORDER_STATUS_FLOW: OrderStatus[] = ["PENDING", "ACCEPTED", "PREPARING", "READY", "SERVED", "COMPLETED"];
+
+export const ORDER_TIME_SLOT_FLOW: OrderTimeSlot[] = ["ALL", "MORNING", "EVENING"];
+
+export const ORDER_TIME_SLOT_LABEL: Record<OrderTimeSlot, string> = {
+  ALL: "All",
+  MORNING: "6:00 AM - 2:00 PM",
+  EVENING: "2:00 PM - 12:00 AM",
+};
 
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   PENDING: "Pending",

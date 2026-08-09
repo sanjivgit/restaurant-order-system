@@ -1,5 +1,7 @@
 export type OrderStatus = "PENDING" | "ACCEPTED" | "PREPARING" | "READY" | "SERVED" | "COMPLETED" | "CANCELLED";
 
+export type OrderTimeSlot = "ALL" | "MORNING" | "EVENING";
+
 export interface MenuCategory {
   id: string;
   name: string;

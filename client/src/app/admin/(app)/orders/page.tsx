@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dayjs from "dayjs";
 import { ClipboardList } from "lucide-react";
 import SearchBar from "@/components/ui/SearchBar";
 import Select from "@/components/ui/Select";
@@ -11,8 +12,8 @@ import Skeleton from "@/components/ui/Skeleton";
 import OrderCard from "@/features/order/components/OrderCard";
 import { useGetOrders } from "@/features/order/services/order.service";
 import { useAppSelector } from "@/redux/hooks";
-import { ORDER_STATUS_FLOW, ORDER_STATUS_LABEL } from "@/utils/constants";
-import type { OrderStatus } from "@/types";
+import { ORDER_STATUS_FLOW, ORDER_STATUS_LABEL, ORDER_TIME_SLOT_FLOW, ORDER_TIME_SLOT_LABEL } from "@/utils/constants";
+import type { OrderStatus, OrderTimeSlot } from "@/types";
 
 const PAGE_SIZE = 6;
 
@@ -20,6 +21,8 @@ export default function AdminOrdersPage() {
   const activeBranch = useAppSelector((s) => s.context.activeBranch);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<OrderStatus | "">("");
+  const [date, setDate] = useState(() => dayjs().format("YYYY-MM-DD"));
+  const [timeSlot, setTimeSlot] = useState<OrderTimeSlot>("ALL");
   const [page, setPage] = useState(1);
 
   const {
@@ -28,7 +31,7 @@ export default function AdminOrdersPage() {
     isError,
     refetch,
   } = useGetOrders(
-    { branchId: activeBranch?.id, status: status || undefined, search: search || undefined },
+    { branchId: activeBranch?.id, status: status || undefined, search: search || undefined, date, timeSlot },
     { refetchInterval: 10000 }
   );
 
@@ -66,6 +69,25 @@ export default function AdminOrdersPage() {
           options={ORDER_STATUS_FLOW.map((s) => ({ label: ORDER_STATUS_LABEL[s], value: s }))}
           placeholder="All statuses"
           className="sm:max-w-[200px]"
+        />
+        <input
+          type="date"
+          value={date}
+          max={dayjs().format("YYYY-MM-DD")}
+          onChange={(e) => {
+            setDate(e.target.value);
+            setPage(1);
+          }}
+          className="input input-bordered w-full rounded-field bg-base-100 focus:outline-none focus:border-primary sm:max-w-[200px]"
+        />
+        <Select
+          value={timeSlot}
+          onChange={(e) => {
+            setTimeSlot(e.target.value as OrderTimeSlot);
+            setPage(1);
+          }}
+          options={ORDER_TIME_SLOT_FLOW.map((s) => ({ label: ORDER_TIME_SLOT_LABEL[s], value: s }))}
+          className="sm:max-w-[240px]"
         />
       </div>
 

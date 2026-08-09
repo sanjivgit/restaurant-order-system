@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import axios from "@/utils/axios";
 import APIs from "@/utils/apis";
 import useAppMutation from "@/react-query-config/hooks/useAppMutation";
 import { getGuestAuthConfig } from "@/features/auth/services/guestToken.service";
-import type { Order, OrderItem, OrderStatus } from "@/types";
+import type { Order, OrderItem, OrderStatus, OrderTimeSlot } from "@/types";
 
 interface ApiOrderItem {
   id: string;
@@ -82,6 +83,8 @@ interface GetOrdersParams {
   branchId?: string;
   status?: OrderStatus;
   search?: string;
+  date?: string;
+  timeSlot?: OrderTimeSlot;
 }
 
 export const useGetOrders = (params: GetOrdersParams, options?: { refetchInterval?: number }) => {
@@ -89,7 +92,13 @@ export const useGetOrders = (params: GetOrdersParams, options?: { refetchInterva
     queryKey: [APIs.ORDER.GET, params],
     queryFn: async () => {
       const { data } = await axios.get(APIs.ORDER.GET, {
-        params: { branchId: params.branchId, status: params.status, limit: 100 },
+        params: {
+          branchId: params.branchId,
+          status: params.status,
+          date: params.date ?? dayjs().format("YYYY-MM-DD"),
+          timeSlot: params.timeSlot ?? "ALL",
+          limit: 100,
+        },
       });
 
       let orders = (data.data?.items ?? data.data ?? []).map(mapOrder) as Order[];

@@ -2,7 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import {
   CreateOrderDto,
+  ORDER_TIME_SLOT,
   OrderQueryDto,
+  OrderTimeSlot,
   UpdateOrderStatusDto,
 } from "./dto/order.dto";
 import {
@@ -101,11 +103,15 @@ export class OrderService {
     // Employees are restricted to their own branch; admins may query any branch (or all).
     const branchId = user.role === "EMPLOYEE" ? user.branchId! : query.branchId;
 
+    // Orders are scoped to the selected date and time slot (defaults: today, ALL).
+    const { gte, lt } = this.buildDateRange(query.date, query.timeSlot);
+
     // Newly placed orders are only visible to admins until accepted. Employees
     // see only the accepted orders still in progress (nothing PENDING or CANCELLED).
     const where = {
       ...(branchId ? { branchId } : {}),
       ...(query.tableId ? { tableId: query.tableId } : {}),
+      createdAt: { gte, lt },
       ...(user.role === "EMPLOYEE"
         ? {
             AND: [
@@ -260,6 +266,34 @@ export class OrderService {
       }
     }
     // Admins may view any order.
+  }
+
+  /**
+   * Builds the createdAt range for the requested date + time slot.
+   * Slots (local time): ALL = 00:00-24:00, MORNING = 06:00-14:00, EVENING = 14:00-24:00.
+   * When no date is given, defaults to today (server local time).
+   */
+  private buildDateRange(date?: string, timeSlot: OrderTimeSlot = ORDER_TIME_SLOT.ALL) {
+    const day = date ? new Date(`${date}T00:00:00`) : new Date();
+    if (!date) day.setHours(0, 0, 0, 0);
+
+    const start = new Date(day);
+    const end = new Date(day);
+
+    if (timeSlot === ORDER_TIME_SLOT.MORNING) {
+      start.setHours(6, 0, 0, 0);
+      end.setHours(14, 0, 0, 0);
+    } else if (timeSlot === ORDER_TIME_SLOT.EVENING) {
+      start.setHours(14, 0, 0, 0);
+      end.setDate(end.getDate() + 1);
+      end.setHours(0, 0, 0, 0);
+    } else {
+      start.setHours(0, 0, 0, 0);
+      end.setDate(end.getDate() + 1);
+      end.setHours(0, 0, 0, 0);
+    }
+
+    return { gte: start, lt: end };
   }
 
   private generateOrderNumber(): string {
