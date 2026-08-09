@@ -87,6 +87,7 @@ export class JwtAuthGuard implements CanActivate {
       type: 'staff',
       role: payload.role === Role.ADMIN ? Role.ADMIN : Role.EMPLOYEE,
       employeeId: payload.sub,
+      restaurantId: payload.restaurantId,
       branchId: payload.branchId ?? null,
     };
   }

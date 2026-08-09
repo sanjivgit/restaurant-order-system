@@ -10,8 +10,9 @@ export interface AuthUser {
   // Staff fields
   employeeId?: string;
   branchId?: string | null;
-  // Guest fields
+  // Shared tenant scope (staff: derived from branch; guest: from token)
   restaurantId?: string;
+  // Guest fields
   tableId?: string;
   guestToken?: string;
 }

@@ -93,6 +93,7 @@ export class AuthService {
   async staffLogin(dto: StaffLoginDto) {
     const employee = await this.prisma.employee.findFirst({
       where: { email: dto.email, deletedAt: null },
+      include: { branch: true },
     });
 
     if (!employee) {
@@ -108,7 +109,7 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    return this.buildTokenPair(employee.id, employee.role as Role, employee.branchId);
+    return this.buildTokenPair(employee.id, employee.role as Role, employee.branchId, employee.branch?.restaurantId);
   }
 
   async refresh(dto: RefreshTokenDto) {
@@ -123,17 +124,35 @@ export class AuthService {
 
     const employee = await this.prisma.employee.findFirst({
       where: { id: payload.sub, deletedAt: null, status: 'ACTIVE' },
+      include: { branch: true },
     });
 
     if (!employee) {
       throw new InvalidCredentialsException('Refresh token is invalid or expired.');
     }
 
-    return this.buildTokenPair(employee.id, employee.role as Role, employee.branchId);
+    return this.buildTokenPair(employee.id, employee.role as Role, employee.branchId, employee.branch?.restaurantId);
   }
 
-  private async buildTokenPair(employeeId: string, role: Role, branchId: string | null) {
-    const basePayload = { type: JWT_STAFF_TYPE, sub: employeeId, role, branchId };
+  private async buildTokenPair(
+    employeeId: string,
+    role: Role,
+    branchId: string | null,
+    restaurantId?: string,
+  ) {
+    if (!restaurantId) {
+      throw new ForbiddenActionException(
+        'Your account is not linked to a branch. Please contact an administrator.',
+      );
+    }
+
+    const basePayload = {
+      type: JWT_STAFF_TYPE,
+      sub: employeeId,
+      role,
+      branchId,
+      restaurantId,
+    };
 
     const accessToken = await this.jwtService.signAsync(basePayload, {
       secret: this.configService.get<string>('auth.jwtAccessSecret'),
@@ -150,6 +169,7 @@ export class AuthService {
       refreshToken,
       role,
       branchId,
+      restaurantId,
     };
   }
 }

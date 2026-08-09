@@ -26,6 +26,9 @@ async function main() {
       email: 'admin@demo-restaurant.com',
       password: hashedPassword,
       role: 'ADMIN',
+      // Every employee (including admins) must belong to a branch so their
+      // restaurantId can be derived from branch -> restaurant at login.
+      branchId: branch.id,
       status: 'ACTIVE',
     },
   });
